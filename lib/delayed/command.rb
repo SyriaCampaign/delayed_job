@@ -77,9 +77,13 @@ module Delayed
 
       if @worker_count > 1 && @options[:identifier]
         raise ArgumentError, 'Cannot specify both --number-of-workers and --identifier'
-      elsif @worker_count == 1 && @options[:identifier]
-        process_name = "#{process_name_prefix}.#{@options[:identifier]}"
-        run_process(process_name, dir)
+      elsif @worker_count == 1
+        if @options[:pid_filename]
+          run_process(process_name_prefix, dir)
+        elsif @options[:identifier]
+          process_name = "#{process_name_prefix}.#{@options[:identifier]}"
+          run_process(process_name, dir)
+        end
       else
         worker_count.times do |worker_index|
           process_name = worker_count == 1 ? process_name_prefix : "#{process_name_prefix}.#{worker_index}"
